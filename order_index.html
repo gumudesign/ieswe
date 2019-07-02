@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>出貨list | GUMU </title>
+    <link rel="canonical" href="https://www.gumudesign.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
+    <link rel="icon" href="https://www.gumudesign.com/wp-content/uploads/2019/01/cropped-GUMU-LOGO-1-32x32.png" sizes="32x32">
+
+    <!-- customized style -->
+    <style>
+      *, *::before, *::after {
+        box-sizing: border-box;
+        font-size: 16px;
+      }
+      body {
+        background: #EEE;
+      }
+      h1 {
+        padding-top: 16px;
+      }
+      .row {
+        margin-bottom: 1px;
+      }
+      .card {
+        display: inline-block;
+        margin-right: 3%;
+        margin-bottom: 3%;
+        width: 30%;
+        padding: 12px;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, .12), 0 1px 2px rgba(0, 0, 0, .24)
+      }
+      .avatar img {
+        border-radius: 50%;
+      }
+      h4 {
+        margin-bottom: 0;
+      }
+      @media screen and (max-width: 1024px) {
+        .container {
+          width: 100%;
+        }
+        .card {
+          margin-right: 1.5%;
+          margin-left: 1.5%;
+          width: 45%;
+        }
+      }
+      @media screen and (max-width: 480px) {
+        .card {
+          width: 97%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="container">
+      <h1>未出貨列表 | GUMU </h1>
+      <p><a href="order_all.html">全覽</a></p>
+      <div class="row js-append-card">
+        <!-- append Card -->
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script>
+      $(function() {
+        $.get('https://spreadsheets.google.com/feeds/list/1QAsquVGO1e32yKsEtofxLtv3y_lYfeYtO89ukfNfGGQ/3/public/values?alt=json', function(data) {
+          var d = data.feed.entry;
+          var items = [];
+          for(var i in d) {
+            var item = {};
+            item.shipmentstatus = d[i].gsx$shipmentstatus.$t;
+            if (item.shipmentstatus != "未出貨"){
+              return false;
+            }
+            item.orderid = d[i].gsx$orderid.$t;
+            item.receiver = d[i].gsx$receiver.$t;
+            item.postcode = d[i].gsx$postcode.$t;
+            item.postaddress = d[i].gsx$postaddress.$t;
+            item.country = d[i].gsx$country.$t;
+            item.amount = d[i].gsx$amount.$t;
+            item.thumbnail = "https://i.imgur.com/g9CKuRu.png";
+            if (item.amount == 1){
+            	item.thumbnail = "https://i.imgur.com/ehImacl.png";
+            }
+            if (item.amount == 2){
+            	item.thumbnail = "https://i.imgur.com/b1zvjHE.png";
+            }
+            if (item.amount == 3){
+            	item.thumbnail = "https://i.imgur.com/LoCfhYc.png";
+            }
+            if (item.amount == 4){
+            	item.thumbnail = "https://i.imgur.com/RmpaA9o.png";
+            }
+            if (item.amount == 9){
+            	item.thumbnail = "https://i.imgur.com/sZCiasM.png";
+            }
+            items.push(item);
+          }
+          console.table(items);
+          for(var i in items) {
+            var Card = `
+              <div class="card">
+                <div class="avatar">
+                  <img src="${items[i].thumbnail}" width="200" height="200">
+                </div>
+                <div class="info">
+                  <h4>${items[i].receiver}</h4>
+                  <p>${items[i].country} <br/>${items[i].postcode} ${items[i].postaddress}</p>
+                  <a class="button button-primary u-full-width" href="">${items[i].shipmentstatus}</a>
+                </div>
+              </div>
+            `;
+            $('.js-append-card').append(Card);
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
